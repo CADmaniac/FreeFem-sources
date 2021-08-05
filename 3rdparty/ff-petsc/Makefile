@@ -75,7 +75,7 @@ PETSC_DOWNLOAD := --download-metis --download-ptscotch \
 ifeq ($(FFCMAKE),no)
 PETSC_DOWNLOAD := $(PETSC_DOWNLOAD) --download-cmake
 endif
-PETSC_DOWNLOAD_C := $(PETSC_DOWNLOAD_C) --download-slepc --download-hpddm # --download-htool
+PETSC_DOWNLOAD_C := $(PETSC_DOWNLOAD_C) --download-slepc --download-hpddm --download-htool
 endif
 ifeq ($(FF_generic_petsc), yes)
 FLAGS_MTUNE := -mtune=generic
@@ -148,8 +148,8 @@ all-local:
 	@echo "	make petsc-slepc "
 
 DIRPKG=../pkg
-VERSION=3.15.1
-VERSION_SLEPC=3.15.1
+VERSION=3.16.0
+VERSION_SLEPC=3.015.1
 PACKAGE=../pkg/petsc-$(VERSION).tar.gz
 SRCDIR=petsc-$(VERSION)
 MPI_DIR:=$(shell dirname $(MPI_INC_DIR))
@@ -302,11 +302,12 @@ WHERE-all:Makefile Make-petsc-download.mk
 	 $(MAKE) -f Makefile.complex $@
 endif
 $(SRCDIR)/tag-tar:$(PACKAGE)
-	-tar xzf $(PACKAGE)
+	-mkdir petsc-$(VERSION) 2>/dev/null
+	-tar xzf $(PACKAGE) -C petsc-$(VERSION) --strip-components 1
 ifeq ($(WIN32DLLTARGET),)
 	cd petsc-$(VERSION) && patch -p1 < ../petsc-cmake-seq.patch && cd -
 endif
-	cd petsc-$(VERSION) && patch -p1 < ../petsc-suitesparse.patch && cd -
+	# cd petsc-$(VERSION) && patch -p1 < ../petsc-suitesparse.patch && cd -
 	touch $@
 $(PACKAGE):
 	../getall -o PETSc -a
